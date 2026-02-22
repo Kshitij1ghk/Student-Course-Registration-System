@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -296,7 +298,7 @@ namespace Student_Course_Registration_System
 
         //ABOVE ALL METHODS OF STUDENT MANAGEMENT 
 
-        static void clearAllData()
+        static void ClearAllData()
         {
             Console.Clear();
             Console.WriteLine("==========================================");
@@ -319,6 +321,294 @@ namespace Student_Course_Registration_System
 
             Console.WriteLine("Enter any key to continue:");
 
+            Console.ReadKey();
+        }
+        //above is clear all data method
+
+        static void CourseManagementMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("          COURSE MANAGEMENT              ");
+            Console.WriteLine("==========================================");
+            Console.WriteLine("1. Add Course");
+            Console.WriteLine("2. View All Courses");
+            Console.WriteLine("3. View Available Courses");
+            Console.WriteLine("4. View Courses by Semester");
+            Console.WriteLine("5. Search Course by ID");
+            Console.WriteLine("6. Remove Course");
+            Console.WriteLine("7. Back to Main Menu");
+            Console.WriteLine("==========================================");
+            Console.Write("Enter your choice: ");
+
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    AddCourse();
+                    break;
+                case "2":
+                    ViewAllCoures();
+                    break;
+                case "3":
+                    ViewAvailableCourses();
+                    break;
+                case "4":
+                    ViewCoursesBySemester();
+                    break;
+                case "5":
+                    SearchCourse();
+                    break;
+                case "6":
+                    RemoveCourse();
+                    break;
+                case "7":
+                    inMenu = false;
+                    break;
+                default:
+                    Console.WriteLine("\nInvalid choice!");
+                    Console.ReadKey();
+                    break;
+
+            }
+        }
+        static void AddCours()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("              ADD COURSE                 ");
+            Console.WriteLine("==========================================");
+            try
+            {
+                Console.WriteLine("Enter Course ID: ");
+                int courseId = int.Parse(Console.ReadLine());
+                Console.Write("Enter Course Name: ");
+                string name = Console.ReadLine();
+
+                Console.WriteLine("\nDepartments:");
+                Console.WriteLine("0. COMPUTER_SCIENCE  1. MATHEMATICS  2. PHYSICS  3. CHEMISTRY");
+                Console.WriteLine("4. BIOLOGY  5. ENGLISH  6. HISTORY  7. BUSINESS");
+                Console.Write("Enter Department number: ");
+                Department department = (Department)int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Credits(1-6): ");
+                int credits = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Capacity: ");
+                int capacity = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Schedule(eg. MWF 10:00-11:00): ");
+                string schedule = Console.ReadLine();
+
+                Console.WriteLine("\nSemesters: 0. FALL  1. SPRING  2. SUMMER");
+                Console.Write("Enter Semester number: ");
+                Semester semester = (Semester)int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Year:");
+                int year = int.Parse(Console.ReadLine());
+
+                service.AddCourse(courseId, name, department, credits, capacity, schedule, semester, year);
+                Console.WriteLine("course added succesfully");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid Input");
+            }
+            catch(ArgumentException ex)
+            {
+                Console.WriteLine("error: " + ex.Message);
+            }
+            Console.WriteLine("Press any key to continue: ");
+            Console.ReadKey();
+        }
+
+        static void ViewAllCourses()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("             ALL COURSES                 ");
+            Console.WriteLine("==========================================");
+
+            List<Course> allCourses=service.GetAllCourse();
+            if (allCourses.Count == 0)
+            {
+                Console.WriteLine("No courses found.");
+            }
+            else
+            {
+                Console.WriteLine(String.Format("{0,-8} {1,-30} {2,-20} {3,-8} {4,-10} {5,-15}",
+           "ID", "Name", "Department", "Credits", "Enrolled", "Schedule"));
+                Console.WriteLine(new string('-', 91));
+                
+                foreach (Course course in allCourses)
+                {
+                    Console.WriteLine(String.Format("{0,-8} {1,-30} {2,-20} {3,-8} {4,-10} {5,-15}",
+                course.CourseId,
+                course.Name,
+                course.Department,
+                course.Credits,
+                course.EnrolledCount + "/" + course.Capacity,
+                course.Schedule));
+                }
+            }
+            Console.WriteLine("\n PRESS ANY KEY TO CONTINUE....");
+            Console.ReadKey();
+        }
+
+        static void ViewAvaialbleCourses()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("          AVAILABLE COURSES              ");
+            Console.WriteLine("==========================================");
+             List<Course> avaialble=service.GetAvailableCourses();
+            if(avaialble.Count== 0)
+            {
+                Console.WriteLine("No available courses.");
+            }
+            else
+            {
+
+                Console.WriteLine(String.Format("{0,-8} {1,-30} {2,-8} {3,-12} {4,-15}",
+                    "ID", "Name", "Credits", "Spots Left", "Schedule"));
+                Console.WriteLine(new string('-', 73));
+                foreach(Course course in avaialble)
+                {
+                    int spotsLeft = course.Capacity - course.EnrolledCount;
+                    Console.WriteLine(String.Format("{0,-8} {1,-30} {2,-8} {3,-12} {4,-15}",
+                course.CourseId,
+                course.Name,
+                course.Credits,
+                spotsLeft,
+                course.Schedule));
+                }
+            }
+            Console.WriteLine("\n press any key to continue.");
+            Console.ReadKey();
+        }
+        static void ViewCouyrsesBySemester()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("        COURSES BY SEMESTER              ");
+            Console.WriteLine("==========================================");
+            try
+            {
+                Console.WriteLine("Semsters: 0.Fail  1.Spring  2.Summer");
+                Console.Write("Enter Semester number: ");
+                Semester semester = (Semester)int.Parse(Console.ReadLine());
+                List<Course> semesterCourses = service.GetCourseBySemester(semester);
+                Console.WriteLine("\n--- " + semester + " Courses ---");
+                if (semesterCourses.Count == 0)
+                {
+                    Console.WriteLine("No courses found for this semster");
+
+                }
+                else
+                {
+                    foreach(Course course in semesterCourses)
+                    {
+                        Console.WriteLine(course.CourseId + " - " + course.Name +
+                                " (" + course.Credits + " credits) " + course.Schedule);
+                    }
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("\n Invalid Input!");
+            }
+            Console.WriteLine("PRESS ANY KEY TO CONTINUE..");
+            Console.ReadKey();
+
+        }
+
+        static void SearchCourses()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("   SEARCH COURSE BY ID   ");
+            Console.WriteLine("==========================================");
+
+            try
+            {
+                Console.Write("Enter Course ID: ");
+                int courseId = int.Parse(Console.ReadLine());
+
+                Course course = service.GetCourse(courseId);
+                if (course == null)
+                {
+                    Console.WriteLine("\n Course not found");
+                }
+                else
+                {
+                    Console.WriteLine("\n--- Course Details ---");
+                    Console.WriteLine("ID: " + course.CourseId);
+                    Console.WriteLine("Name: " + course.Name);
+                    Console.WriteLine("Department: " + course.Department);
+                    Console.WriteLine("Credits: " + course.Credits);
+                    Console.WriteLine("Capacity: " + course.Capacity);
+                    Console.WriteLine("Enrolled: " + course.EnrolledCount + "/" + course.Capacity);
+                    Console.WriteLine("Schedule: " + course.Schedule);
+                    Console.WriteLine("Semester: " + course.Semester);
+                    Console.WriteLine("Year: " + course.Year);
+                    Console.WriteLine("Status: " + (course.IsFull() ? "FULL" : "AVAILABLE"));
+
+                    List<Student> students = service.GetCourseStudents(courseId);
+                    Console.WriteLine("\n Enrolled Students : " + students.Count);
+                    foreach(Student student in students)
+                    {
+                        Console.WriteLine("  - " + student.Name + " (ID: " + student.StudentId + ")");
+
+                    }
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid Input");
+                
+            }
+            Console.WriteLine("\n PRESS ANY KEY TO CONTINUE");
+            Console.ReadKey();
+        }
+        static void RemoveCourse()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("            REMOVE COURSE                ");
+            Console.WriteLine("==========================================");
+
+            try
+            {
+                Console.WriteLine("Enter course Id to remove: ");
+                int courseId = int.Parse(Console.ReadLine());
+
+                Course existing = service.GetCourse(courseId);
+                if (existing == null)
+                {
+                    Console.WriteLine("\n course not found");
+                    Console.ReadKey();
+                    return;
+                }
+                else
+                {
+                    service.RemoveCourse(courseId);                  
+                }
+                
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("INVALID input");
+
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("error:"+ex.Message);
+            }
+            catch(InvalidOperationException ex)
+            {
+                Console.WriteLine("error: "+ex.Message);
+            }
+            Console.WriteLine("press any key to continue...");
             Console.ReadKey();
         }
 
