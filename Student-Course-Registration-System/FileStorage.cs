@@ -154,10 +154,23 @@ namespace Student_Course_Registration_System
                 try
                 {
                     string[] parts = lines[i].Split(',');
-                    
+
+                    int studentId = int.Parse(parts[0]);
+                    int courseId = int.Parse(parts[1]);
+
+                    if (enrollments.ContainsKey(studentId))
+                    {
+                        enrollments[studentId].Add(courseId);
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
             }
+            return enrollments;
         }
+
 
     }
 
