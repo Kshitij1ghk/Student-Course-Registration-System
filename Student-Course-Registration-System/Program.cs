@@ -290,6 +290,35 @@ namespace Student_Course_Registration_System
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
+            Console.WriteLine("ENTER ANY KEY TO CONTINUE...");
+            Console.ReadKey();
+        }
+
+        //ABOVE ALL METHODS OF STUDENT MANAGEMENT 
+
+        static void clearAllData()
+        {
+            Console.Clear();
+            Console.WriteLine("==========================================");
+            Console.WriteLine("            CLEAR ALL DATA               ");
+            Console.WriteLine("==========================================");
+            Console.WriteLine("WARNING: This will delete ALL data!");
+            Console.Write("Type YES to confirm: ");
+
+            string confirm = Console.ReadLine();
+
+            if (confirm.ToUpper() == "YES")
+            {
+                service.ClearAllData();
+                Console.WriteLine("\n✓ All data cleared!");
+            }
+            else
+            {
+                Console.WriteLine("\nOperation cancelled.");
+            }
+
+            Console.WriteLine("Enter any key to continue:");
+
             Console.ReadKey();
         }
 
