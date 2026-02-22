@@ -191,7 +191,7 @@ namespace Student_Course_Registration_System
             Console.ReadKey();
         }
 
-        static void UpdatStudent()
+        static void UpdateStudent()
         {
             Console.Clear();
             Console.WriteLine("==========================================");
