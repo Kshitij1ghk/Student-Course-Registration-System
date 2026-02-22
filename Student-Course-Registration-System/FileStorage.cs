@@ -171,7 +171,12 @@ namespace Student_Course_Registration_System
             return enrollments;
         }
 
-
+        public void ClearAllData()
+        {
+            File.WriteAllLines(StudentsFile, new string[] { "StudentId,Name,Email,Major,Status,EnrollmentYear,ExpectedGraduationYear" });
+            File.WriteAllLines(CoursesFile, new string[] { "CourseId,Name,Department,Credits,Capacity,EnrolledCount,Schedule,Semester,Year" });
+            File.WriteAllLines(EnrollmentsFile, new string[] { "StudentId,CourseId" });
+        }
     }
 
 

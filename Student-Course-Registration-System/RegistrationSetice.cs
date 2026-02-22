@@ -11,12 +11,13 @@ namespace Student_Course_Registration_System
         private Dictionary<int, Student> students; //key:studentid value:Student object
         private Dictionary<int, Course> courses;//same as above for ccourse id and object
         private Dictionary<int, List<int>> enrollments;//key:studentid ,value:list of course ids
-
+        private IStorageIntrerface storage; 
         public RegistrationService()
         {
             students=new Dictionary<int, Student>();
             courses=new Dictionary<int, Course>();
             enrollments=new Dictionary<int, List<int>>();
+            storage = new FileStorage();
 
         }
 
@@ -130,7 +131,7 @@ namespace Student_Course_Registration_System
             }
             return courses[courseId];       
         }
-        public List<Course> GetAllCourses()
+        public List<Course> GetAllCourse()
         {
             return new List<Course>(courses.Values);
         }
@@ -148,7 +149,7 @@ namespace Student_Course_Registration_System
             }
             return availableCourses;
         }
-        public List<Course> GetCoursesBySemester(Semester semester)
+        public List<Course> GetCourseBySemester(Semester semester)
         {
             List<Course> SemesterCourses=new List<Course> ();
             foreach(Course course in courses.Values)
@@ -162,7 +163,7 @@ namespace Student_Course_Registration_System
             return SemesterCourses;
         }
 
-        public void EnrolledStudentCourse(int studentId,int courseId)
+        public void EnrollStudentInCourse(int studentId,int courseId)
         {
             if (!students.ContainsKey(studentId))
             {
@@ -229,7 +230,7 @@ namespace Student_Course_Registration_System
             return studentCourses;
         }
 
-        public List<Student> GetCoursesStudents(int courseId)
+        public List<Student> GetCourseStudents(int courseId)
         {
             if (!courses.ContainsKey(courseId))
             {
@@ -262,7 +263,42 @@ namespace Student_Course_Registration_System
             return totalCredits;
         }
 
-        
+        public void Save()
+        {
+            storage.SaveStudents(students);
+            storage.SaveCourses(courses);
+            storage.SaveEnrollments(enrollments);
+        }
+
+        public void Load()
+        {
+            students=storage.LoadStudents();
+            courses=storage.LoadCourses();
+
+            //initializing enrollment lists for each student first
+            foreach(int studentId in students.Keys)
+            {
+                enrollments.Add(studentId, new List<int>());
+            }
+
+            //load enrollments and mergeing then
+            Dictionary<int,List<int>> loadedEnrollemnts=storage.LoadEnrollments();
+            foreach(KeyValuePair<int,List<int>> enrollment in loadedEnrollemnts)
+            {
+                if (enrollments.ContainsKey(enrollment.Key))
+                {
+                    enrollments[enrollment.Key] = enrollment.Value;
+                }
+            }
+
+        }
+        public void ClearAllData()
+        {
+            students.Clear();
+            courses.Clear();
+            enrollments.Clear();
+            storage.ClearAllData();
+        }
         
     }
 

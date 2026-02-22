@@ -34,6 +34,8 @@ namespace Student_Course_Registration_System
         List<Student> GetCourseStudents(int courseId);
         int GetStudentTotalCredits(int studentId);
 
-
+        void Save();
+        void Load();
+        void ClearAllData();
     }
 }
