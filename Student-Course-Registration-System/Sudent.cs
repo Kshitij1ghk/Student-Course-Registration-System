@@ -8,7 +8,7 @@ namespace Student_Course_Registration_System
 {
     public class Student
     {
-        public int Id { get; private set; }
+        public int StudentId { get; private set; }
         public string Name { get;private set; }
         public string Email { get;private set; }
         public Department Major { get; private set; }
@@ -16,10 +16,10 @@ namespace Student_Course_Registration_System
         public int EnrollmentYear { get; private set; }
         public int ExpectedGraduationYear { get; private set; }
 
-        public Student(int id,string name,string email,Department major,
+        public Student(int studentId,string name,string email,Department major,
             StudentStatus status,int enrollmentYear,int expectedGraduationYear)
         {
-            if (id <= 0)
+            if (studentId <= 0)
             {
                 throw new ArgumentException("student id must be positive");
             }
@@ -41,7 +41,7 @@ namespace Student_Course_Registration_System
                 throw new ArgumentException("Graduation year must be after enrollment year");
             }
 
-            Id = id;
+            StudentId = studentId;
             Name=name.ToUpper();
             Email=email.ToLower();
             Major = major;
